@@ -1,3 +1,3 @@
 object Main extends App{
-  println("Hola Mundo!")
+  println("Hola Mundo desde Scala")
 }
