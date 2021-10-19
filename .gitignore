@@ -1,3 +1,6 @@
+# custom ignores
+data.dat
+
 # bloop and metals
 .bloop
 .bsp
