@@ -9,4 +9,6 @@ libraryDependencies ++= Seq(
   "com.lihaoyi" %% "requests" % "0.6.9",
   "org.apache.httpcomponents" % "httpclient" % "4.5.13",
   "com.lihaoyi" %% "upickle" % "1.4.2",
+  "org.apache.spark" %% "spark-core" % "3.2.0",
+  "org.apache.spark" %% "spark-sql" % "3.2.0" % "provided"
 )
