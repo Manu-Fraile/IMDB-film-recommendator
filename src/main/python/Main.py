@@ -1,2 +1,4 @@
-if __name__ == "__main__":
-    print("Hola Mundo desde Python!")
+#!/usr/bin/python
+import sys
+for line in sys.stdin:
+    print("python script:" + line.upper())

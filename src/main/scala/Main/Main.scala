@@ -1,9 +1,11 @@
 package Main
 
 import org.apache.log4j.{Level, Logger}
-import org.apache.spark.SparkConf
+import org.apache.spark.{SparkConf, SparkFiles}
 import org.apache.spark.sql.functions.{col, _}
 import org.apache.spark.sql.{SQLContext, SparkSession}
+
+import scala.util.chaining.scalaUtilChainingOps
 
 object Main extends App {
   println("Hola Mundo desde Scala")
@@ -23,14 +25,19 @@ object Main extends App {
 
   val sqlcontext:SQLContext = new SQLContext(sc)
 
+  //Process the data from data.dat to retrieve the info for each film with the structure of the case class.
   val jsonMovieObj = sqlcontext.read.option("multiline", true).json("data.dat")
   jsonMovieObj.printSchema()
   val moviesOneCol = jsonMovieObj.select(explode(col("movie_results")).as("movies"))
+
+  //Map the data into the case class.
   val moviesMultiCol = moviesOneCol.select(col("movies.title").as("title"),
                                            col("movies.imdb_rating").as("rating"),
                                            col("movies.genres").as("genres"),
                                            col("movies.stars").as("actors"),
                                            col("movies.directors").as("directors"))
+
+  //Transform into DF or any other structure if necessary for the Recommendation Algorithm.
   val bagOfWord = moviesMultiCol
     .withColumn("bag_of_words", array_union(array_union($"genres", $"actors"), $"directors"))
   val bagOfWordMerged = bagOfWord
@@ -40,10 +47,13 @@ object Main extends App {
 
   bagOfWordLowercase.show(41, false)
 
-  //val moviesRaw = sc.textFile("data.dat")
+  //Pipe the RDD with spark to Python. See https://stackoverflow.com/questions/32975636/how-to-use-both-scala-and-python-in-a-same-spark-project
+  val scriptPath = "/home/osboxes/Desktop/IMDB-film-recommendator/src/main/python/Main.py"
+  val scriptName = "Main.py"
+  sc.addFile(scriptPath)
 
-  //TODO 1: Process the data from data.dat to retrieve the info for each film with the structure of the case class.
-  //TODO 2: Map the data into the case class.
-  //TODO 3: Transform into DF or any other structure if necessary for the Recommendation Algorithm.
-  //TODO 4: Pipe the RDD with spark to Python. See https://stackoverflow.com/questions/32975636/how-to-use-both-scala-and-python-in-a-same-spark-project
+  val pipeRDD = bagOfWordLowercase.rdd.pipe(SparkFiles.get(scriptName))
+
+  pipeRDD.foreach(println)
+
 }
