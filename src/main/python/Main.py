@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3.8
 import sys
 import pandas as pd
 from rake_nltk import Rake
@@ -8,21 +8,21 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 for line in sys.stdin:
     print("python script:" + line.upper())
-//TODO have df with index col titles and feature bag_of_words
+    #TODO have df with index col titles and feature bag_of_words
 
-# instantiating and generating the count matrix
-count = CountVectorizer()
-count_matrix = count.fit_transform(df['bag_of_words'])
+    # instantiating and generating the count matrix
+    count = CountVectorizer()
+    count_matrix = count.fit_transform(df['bag_of_words'])
 
-# generating the cosine similarity matrix
-cosine_sim = cosine_similarity(count_matrix, count_matrix)
+    # generating the cosine similarity matrix
+    cosine_sim = cosine_similarity(count_matrix, count_matrix)
 
-# creating a Series for the movie titles so they are associated to an ordered numerical
-# list I will use in the function to match the indexes
-indices = pd.Series(df.index)
+    # creating a Series for the movie titles so they are associated to an ordered numerical
+    # list I will use in the function to match the indexes
+    indices = pd.Series(df.index)
 
-#  defining the function that takes in movie title
-# as input and returns the top 10 recommended movies
+    #  defining the function that takes in movie title
+    # as input and returns the top 10 recommended movies
 def recommendations(title, cosine_sim = cosine_sim):
 
     # initializing the empty list of recommended movies
@@ -43,4 +43,4 @@ def recommendations(title, cosine_sim = cosine_sim):
 
     return recommended_movies
 
- recommendations('The Strangers ')
+    recommendations('The Strangers ')
