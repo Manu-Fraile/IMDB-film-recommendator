@@ -4,9 +4,6 @@ import org.apache.log4j.{Level, Logger}
 import org.apache.spark.{SparkConf, SparkFiles}
 import org.apache.spark.sql.functions.{col, _}
 import org.apache.spark.sql.{SQLContext, SparkSession}
-import org.apache.spark.SparkFiles
-
-import scala.util.chaining.scalaUtilChainingOps
 
 object Main extends App {
   //Turn off red INFO logs
@@ -26,7 +23,6 @@ object Main extends App {
 
   //Process the data from data.dat to retrieve the info for each film with the structure of the case class.
   val jsonMovieObj = sqlcontext.read.option("multiline", true).json("data.dat")
-  //jsonMovieObj.printSchema()
   val moviesOneCol = jsonMovieObj.select(explode(col("movie_results")).as("movies"))
 
   //Map the data into the case class.
@@ -52,9 +48,7 @@ object Main extends App {
   sc.addFile(scriptPath)
 
   val dataRDD = bagOfWordLowercase.rdd
-
   val pipeRDD = dataRDD.pipe(SparkFiles.get(scriptName))
 
   pipeRDD.foreach(println)
-
 }
