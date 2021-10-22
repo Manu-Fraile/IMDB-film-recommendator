@@ -1,25 +1,31 @@
 #!/usr/bin/python3.8
 import sys
 import pandas as pd
-from rake_nltk import Rake
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import CountVectorizer
 
+
+df = pd.DataFrame()
+
 for line in sys.stdin:
-    print("python script:" + line.upper())
-    #TODO have df with index col titles and feature bag_of_words
+    parsed = line.replace("[", "").replace("]", "").rsplit(',',1)
+    toAppend = pd.DataFrame([parsed], columns=["title", "bag_of_words"])
+    df = df.append(toAppend)
 
-    # instantiating and generating the count matrix
-    count = CountVectorizer()
-    count_matrix = count.fit_transform(df['bag_of_words'])
+df.set_index('title', inplace=True)
+print(df)
 
-    # generating the cosine similarity matrix
-    cosine_sim = cosine_similarity(count_matrix, count_matrix)
+# instantiating and generating the count matrix
+count = CountVectorizer()
+count_matrix = count.fit_transform(df['bag_of_words'])
 
-    # creating a Series for the movie titles so they are associated to an ordered numerical
-    # list I will use in the function to match the indexes
-    indices = pd.Series(df.index)
+# generating the cosine similarity matrix
+cosine_sim = cosine_similarity(count_matrix, count_matrix)
+
+# creating a Series for the movie titles so they are associated to an ordered numerical
+# list I will use in the function to match the indexes
+indices = pd.Series(df.index)
 
     #  defining the function that takes in movie title
     # as input and returns the top 10 recommended movies
@@ -43,4 +49,4 @@ def recommendations(title, cosine_sim = cosine_sim):
 
     return recommended_movies
 
-    recommendations('The Strangers ')
+print(recommendations('The Strangers'))
